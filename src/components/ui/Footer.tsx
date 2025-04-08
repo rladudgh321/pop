@@ -2,27 +2,28 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 mt-auto">
-      <div className="container mx-auto px-4 py-8">
+    <footer className="bg-amber-50 mt-auto relative overflow-hidden">
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'url("/popcorn-pattern.svg")', backgroundSize: '200px' }} />
+      <div className="container mx-auto px-4 py-8 relative">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* 회사 정보 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">팝콘팝</h3>
+            <h3 className="text-lg font-bold text-amber-600 mb-4">그린농장</h3>
             <p className="text-gray-600 mb-2">뻥튀기 기계 대여 전문 업체</p>
-            <p className="text-gray-600">사업자 등록번호: 123-45-67890</p>
+            <p className="text-gray-600">사업자 등록번호: 867-13-02115</p>
           </div>
 
           {/* 연락처 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">연락처</h3>
-            <p className="text-gray-600 mb-2">전화: 02-123-4567</p>
-            <p className="text-gray-600 mb-2">이메일: info@popcornpop.com</p>
-            <p className="text-gray-600">주소: 서울특별시 강남구 테헤란로 123</p>
+            <h3 className="text-lg font-bold text-amber-600 mb-4">연락처</h3>
+            <p className="text-gray-600 mb-2">전화: 010-2757-6638</p>
+            <p className="text-gray-600 mb-2">이메일: jiou00@naver.com</p>
+            <p className="text-gray-600">주소: 대전광역시 동구 가양동 323-21</p>
           </div>
 
           {/* 바로가기 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">바로가기</h3>
+            <h3 className="text-lg font-bold text-amber-600 mb-4">바로가기</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/machines" className="text-gray-600 hover:text-amber-600 transition-colors">기계 소개</Link>
@@ -37,8 +38,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 mt-8 pt-6 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} 팝콘팝. All rights reserved.</p>
+        <div className="border-t border-amber-200 mt-8 pt-6 text-center text-amber-700 text-sm">
+          <p>© {new Date().getFullYear()} 그린농장. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "팝콘팝 - 뻥튀기 기계 대여",
+  title: "그린농장 - 뻥튀기 기계 대여",
   description: "뻥튀기 과자 기계 대여 서비스, 날짜 예약 및 결제 기능 제공",
 };
 
