@@ -1,73 +1,115 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { MACHINES, RICE_OPTIONS } from '../../constants/data';
+import { useForm } from 'react-hook-form';
+import { object, string, number, boolean, date } from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { MACHINES, RICE_OPTIONS, DELIVERY_PRICES } from '../../constants/data';
 import { calculateTotalPrice } from '../../utils/pricing';
+
+interface DeliveryOption {
+  distance: number;
+  price: number;
+  isRoundTrip: boolean;
+}
+
+interface ReservationFormData {
+  selectedMachine: number | null;
+  startDate: string;
+  endDate: string;
+  selectedRiceOption: number | null;
+  deliveryOption: DeliveryOption | null;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+}
+
+const validationSchema = object().shape({
+  selectedMachine: number().nullable().required('기계를 선택해주세요.'),
+  startDate: string().required('대여 시작일을 선택해주세요.'),
+  endDate: string().required('대여 종료일을 선택해주세요.'),
+  selectedRiceOption: number().nullable(),
+  customerName: string().when('isCalculated', {
+    is: true,
+    then: string().required('이름을 입력해주세요.')
+  }),
+  customerPhone: string().when('isCalculated', {
+    is: true,
+    then: string().required('연락처를 입력해주세요.')
+      .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '올바른 전화번호 형식이 아닙니다.')
+  }),
+  customerEmail: string().when('isCalculated', {
+    is: true,
+    then: string().required('이메일을 입력해주세요.')
+      .email('올바른 이메일 형식이 아닙니다.')
+  })
+});
 
 const ReservationClient = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMachineId = searchParams.get('machine') ? parseInt(searchParams.get('machine') as string) : null;
 
-  // 상태 관리
-  const [selectedMachine, setSelectedMachine] = useState<number | null>(initialMachineId);
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [selectedRiceOption, setSelectedRiceOption] = useState<number | null>(null);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [customerName, setCustomerName] = useState<string>('');
-  const [customerPhone, setCustomerPhone] = useState<string>('');
-  const [customerEmail, setCustomerEmail] = useState<string>('');
+  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<ReservationFormData>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      selectedMachine: initialMachineId,
+      startDate: '',
+      endDate: '',
+      selectedRiceOption: null,
+      deliveryOption: null,
+      customerName: '',
+      customerPhone: '',
+      customerEmail: ''
+    }
+  });
+
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  
+  const selectedMachine = watch('selectedMachine');
+  const startDate = watch('startDate');
+  const endDate = watch('endDate');
 
   // 가격 계산
   const calculatePrice = () => {
-    if (!selectedMachine || !startDate || !endDate) {
-      alert('기계와 대여 기간을 선택해주세요.');
-      return;
-    }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
+    if (!selectedMachine || !startDate || !endDate) return;
+  
+    const start = new Date(startDate + 'T00:00:00');
+    const end = new Date(endDate + 'T00:00:00');
+  
     if (start > end) {
       alert('종료일은 시작일 이후여야 합니다.');
       return;
     }
-
-    const price = calculateTotalPrice(start, end, selectedRiceOption);
+  
+    const selectedRiceOption = watch('selectedRiceOption');
+    const deliveryOption = watch('deliveryOption');
+  
+    const price = calculateTotalPrice(start, end, selectedRiceOption) +
+      (deliveryOption ? (deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price) : 0);
+  
     setTotalPrice(price);
     setIsCalculated(true);
-
-    // 콘솔에 예약 정보 출력 (백엔드 구현 전 임시)
-    console.log('===== 예약 정보 =====');
-    console.log(`선택한 기계: ${MACHINES.find(m => m.id === selectedMachine)?.name}`);
-    console.log(`대여 시작일: ${start.toLocaleDateString()}`);
-    console.log(`대여 종료일: ${end.toLocaleDateString()}`);
-    console.log(`선택한 원재료: ${selectedRiceOption ? RICE_OPTIONS.find(o => o.id === selectedRiceOption)?.name : '일반 쌀'}`);
-    console.log(`총 가격: ${price.toLocaleString()}원`);
   };
 
   // 결제 처리
-  const handlePayment = () => {
-    if (!customerName || !customerPhone || !customerEmail) {
-      alert('고객 정보를 모두 입력해주세요.');
-      return;
+  const onSubmit = async (data: ReservationFormData) => {
+    try {
+      // 결제 처리 (백엔드 구현 전 콘솔에 출력)
+      console.log('===== 결제 정보 =====');
+      console.log('예약 정보:', data);
+      console.log(`결제 금액: ${totalPrice.toLocaleString()}원`);
+
+      // 결제 완료 후 완료 페이지로 이동
+      alert('예약 및 결제가 완료되었습니다. 감사합니다!');
+      router.push('/');
+    } catch (error) {
+      console.error('결제 처리 중 오류 발생:', error);
+      alert('결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-
-    // 결제 처리 (백엔드 구현 전 콘솔에 출력)
-    console.log('===== 결제 정보 =====');
-    console.log(`고객명: ${customerName}`);
-    console.log(`연락처: ${customerPhone}`);
-    console.log(`이메일: ${customerEmail}`);
-    console.log(`결제 금액: ${totalPrice.toLocaleString()}원`);
-    console.log('결제가 완료되었습니다.');
-
-    // 결제 완료 후 완료 페이지로 이동
-    alert('예약 및 결제가 완료되었습니다. 감사합니다!');
-    router.push('/');
   };
 
   // 초기 기계 선택 시 스크롤
@@ -80,9 +122,15 @@ const ReservationClient = () => {
     }
   }, [initialMachineId]);
 
+  // 폼 값 변경 시 자동 가격 계산
+  useEffect(() => {
+    if (selectedMachine && startDate && endDate) {
+      calculatePrice();
+    }
+  }, [selectedMachine, startDate, endDate]);
   return (
     <div className="container mx-auto px-4 py-8 relative">
-      <div className="absolute inset-0" style={{ backgroundImage: 'url("/popcorn-pattern.svg")', backgroundSize: '200px', opacity: 0.1 }} />
+    <div className="absolute inset-0" style={{ backgroundImage: 'url("/popcorn-pattern.svg")', backgroundSize: '200px', opacity: 0.1 }} />
       
       {/* 히어로 섹션 */}
       <section className="relative h-[400px] rounded-xl overflow-hidden mb-12">
@@ -126,7 +174,7 @@ const ReservationClient = () => {
             <div 
               key={machine.id} 
               className={`bg-white border-2 rounded-lg overflow-hidden cursor-pointer transition-all transform hover:scale-105 ${selectedMachine === machine.id ? 'border-amber-600 ring-2 ring-amber-600 shadow-xl' : 'border-amber-200 hover:border-amber-400 shadow-lg hover:shadow-xl'}`}
-              onClick={() => setSelectedMachine(machine.id)}
+              onClick={() => setValue('selectedMachine', machine.id)}
             >
               <div className="relative h-48">
                 <Image
@@ -159,8 +207,8 @@ const ReservationClient = () => {
             <input 
               type="date" 
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              {...register('startDate')}
+              className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all ${errors.startDate ? 'border-red-500' : ''}`}
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
@@ -169,8 +217,8 @@ const ReservationClient = () => {
             <input 
               type="date" 
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              {...register('endDate')}
+              className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all ${errors.endDate ? 'border-red-500' : ''}`}
               min={startDate || new Date().toISOString().split('T')[0]}
             />
           </div>
@@ -185,7 +233,7 @@ const ReservationClient = () => {
             <div 
               key={option.id} 
               className={`border rounded-lg p-6 cursor-pointer transition-all transform hover:scale-105 ${selectedRiceOption === option.id ? 'border-amber-600 ring-2 ring-amber-600 shadow-lg bg-amber-50' : 'border-gray-200 hover:border-amber-300 hover:shadow-md bg-white'}`}
-              onClick={() => setSelectedRiceOption(option.id)}
+              onClick={() => setValue('selectedRiceOption', option.id)}
             >
               <h3 className="text-lg font-semibold mb-2">{option.name}</h3>
               <p className="text-gray-600 text-sm mb-3">{option.description}</p>
@@ -197,12 +245,72 @@ const ReservationClient = () => {
         </div>
       </section>
 
+      {/* 용달 옵션 */}
+      <section className="mb-12 relative bg-gradient-to-br from-amber-50 to-white rounded-2xl p-8 shadow-lg border border-amber-100">
+        <h2 className="text-2xl font-semibold mb-6">4. 용달 옵션 선택</h2>
+        <div className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all border border-amber-200 hover:border-amber-300">
+              <label className="block text-gray-700 mb-2">배송 거리</label>
+              <select
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all"
+                {...register('deliveryOption.distance')}
+                onChange={(e) => {
+                  const distance = parseInt(e.target.value);
+                  const price = DELIVERY_PRICES.find(p => p.distance === distance)?.price || 0;
+                  setValue('deliveryOption', {
+                    distance,
+                    price,
+                    isRoundTrip: watch('deliveryOption')?.isRoundTrip || false
+                  });
+                }}
+                value={watch('deliveryOption')?.distance || ''}
+              >
+                <option value="">거리를 선택하세요</option>
+                {DELIVERY_PRICES.map((option) => (
+                  <option key={option.distance} value={option.distance}>
+                    {option.distance}km - {option.price.toLocaleString()}원
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all border border-amber-200 hover:border-amber-300">
+              <label className="block text-gray-700 mb-2">배송 방식</label>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={deliveryOption?.isRoundTrip === false} onChange={() => setDeliveryOption(prev => prev ? { ...prev, isRoundTrip: false } : { distance: 0, price: 0, isRoundTrip: false })} className="form-radio text-amber-600"
+                  />
+                  <span>일주일 이상 이벤트가 - 편도</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={deliveryOption?.isRoundTrip === true} onChange={() => setDeliveryOption(prev => prev ? { ...prev, isRoundTrip: true } : { distance: 0, price: 0, isRoundTrip: true })} className="form-radio text-amber-600"
+                  />
+                  <span>기본가 - 왕복 (편도 가격의 2배)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          {deliveryOption && (
+            <div className="mt-4 p-4 bg-amber-50 rounded-lg">
+              <p className="text-amber-700">
+                선택한 배송 옵션: {deliveryOption.distance}km {deliveryOption.isRoundTrip ? '왕복' : '편도'} -
+                {(deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price).toLocaleString()}원
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* 가격 계산 버튼 */}
       <div className="mb-12 text-center">
         <button 
-          onClick={calculatePrice}
+          onClick={handleSubmit(calculatePrice)}
           className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          disabled={!selectedMachine || !startDate || !endDate}
+          disabled={!selectedMachine || !startDate || !endDate || isSubmitting}
         >
           가격 계산하기
         </button>
@@ -211,7 +319,7 @@ const ReservationClient = () => {
       {/* 가격 정보 및 결제 */}
       {isCalculated && (
         <section className="mb-12 bg-gradient-to-br from-amber-50 to-white rounded-2xl p-8 shadow-lg border border-amber-100 transform transition-all hover:shadow-xl">
-          <h2 className="text-2xl font-semibold mb-6">4. 예약 정보 확인 및 결제</h2>
+          <h2 className="text-2xl font-semibold mb-6">5. 예약 정보 확인 및 결제</h2>
           
           <div className="mb-8">
             <h3 className="text-xl font-semibold mb-4">예약 정보</h3>
@@ -232,6 +340,15 @@ const ReservationClient = () => {
                 <p className="text-gray-600 mb-1">대여 종료일</p>
                 <p className="text-lg font-semibold">{new Date(endDate).toLocaleDateString()}</p>
               </div>
+              {deliveryOption && (
+                <div className="md:col-span-2 border rounded-lg p-6 bg-gray-50 hover:shadow-md transition-shadow">
+                  <p className="text-gray-600 mb-1">배송 옵션</p>
+                  <p className="text-lg font-semibold">
+                    {deliveryOption.distance}km {deliveryOption.isRoundTrip ? '왕복' : '편도'} - 
+                    {(deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price).toLocaleString()}원
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="bg-gradient-to-r from-amber-500 to-amber-400 rounded-lg p-6 mb-6 transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
@@ -251,8 +368,12 @@ const ReservationClient = () => {
                   <input 
                     type="text" 
                     className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
+                    {...register('customerName')}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all ${errors.customerName ? 'border-red-500' : ''}`}
+                  />
+                  {errors.customerName && (
+                    <p className="mt-1 text-sm text-red-500">{errors.customerName.message}</p>
+                  )
                     placeholder="이름을 입력하세요"
                   />
                 </div>
@@ -261,8 +382,12 @@ const ReservationClient = () => {
                   <input 
                     type="tel" 
                     className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    {...register('customerPhone')}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all ${errors.customerPhone ? 'border-red-500' : ''}`}
+                  />
+                  {errors.customerPhone && (
+                    <p className="mt-1 text-sm text-red-500">{errors.customerPhone.message}</p>
+                  )
                     placeholder="연락처를 입력하세요"
                   />
                 </div>
@@ -271,8 +396,12 @@ const ReservationClient = () => {
                   <input 
                     type="email" 
                     className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    {...register('customerEmail')}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all ${errors.customerEmail ? 'border-red-500' : ''}`}
+                  />
+                  {errors.customerEmail && (
+                    <p className="mt-1 text-sm text-red-500">{errors.customerEmail.message}</p>
+                  )
                     placeholder="이메일을 입력하세요"
                   />
                 </div>

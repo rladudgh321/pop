@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MACHINES, PRICING } from "../constants/data";
+import { MACHINES } from "../constants/data";
+import PriceTable from "@/components/ui/PriceTable";
 
 export default function Home() {
   return (
@@ -94,45 +95,7 @@ export default function Home() {
       {/* 가격 정보 */}
       <section className="mb-16">
         <h2 className="text-3xl font-bold mb-8 text-center text-amber-800">대여 가격 안내</h2>
-        <div className="bg-gradient-to-br from-amber-50 to-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
-          <div className="p-8">
-            <h3 className="text-2xl font-bold mb-6 text-amber-700">기본 대여 가격</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-amber-100">
-                <p className="text-lg font-medium mb-3 text-amber-800">평일</p>
-                <p className="text-3xl font-bold text-amber-600">{PRICING.WEEKDAY.toLocaleString()}원</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-amber-100">
-                <p className="text-lg font-medium mb-3 text-amber-800">주말</p>
-                <p className="text-3xl font-bold text-amber-600">{PRICING.WEEKEND.toLocaleString()}원</p>
-              </div>
-            </div>
-
-            <h3 className="text-2xl font-bold mb-6 text-amber-700">주말 장기 대여 할인</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-amber-100">
-                <p className="text-lg font-medium mb-3 text-amber-800">1주일 이내</p>
-                <p className="text-2xl font-bold text-amber-600">{PRICING.WEEKEND_DISCOUNT.ONE_WEEK.toLocaleString()}원</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-amber-100">
-                <p className="text-lg font-medium mb-3 text-amber-800">1~2주일</p>
-                <p className="text-xl font-bold text-amber-600">{PRICING.WEEKEND_DISCOUNT.TWO_WEEKS.toLocaleString()}원</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-amber-100">
-                <p className="text-lg font-medium mb-3 text-amber-800">2~3주일</p>
-                <p className="text-xl font-bold text-amber-600">{PRICING.WEEKEND_DISCOUNT.THREE_WEEKS.toLocaleString()}원</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-amber-100">
-                <p className="text-lg font-medium mb-3 text-amber-800">3주일 이상</p>
-                <p className="text-xl font-bold text-amber-600">{PRICING.WEEKEND_DISCOUNT.FOUR_WEEKS.toLocaleString()}원</p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-gray-700">※ 4주일 이상 대여 시 주말 가격도 평일과 동일한 {PRICING.WEEKEND_DISCOUNT.OVER_FOUR_WEEKS.toLocaleString()}원으로 적용됩니다.</p>
-            </div>
-          </div>
-        </div>
+        <PriceTable />
       </section>
 
       {/* CTA 섹션 */}

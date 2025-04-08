@@ -59,3 +59,27 @@ export const PRICING = {
     OVER_FOUR_WEEKS: 50000, // 4주일 이상: 5만원
   },
 };
+
+// 배송 거리별 가격
+export const DELIVERY_PRICES = [
+  { distance: 5, price: 20000 },
+  { distance: 10, price: 23000 },
+  { distance: 15, price: 27000 },
+  { distance: 20, price: 30000 },
+  { distance: 25, price: 35000 },
+  { distance: 30, price: 38000 },
+  { distance: 35, price: 42000 },
+  { distance: 40, price: 48000 },
+  { distance: 45, price: 54000 },
+  { distance: 50, price: 58000 },
+  { distance: 60, price: 64000 },
+  { distance: 70, price: 68000 },
+  { distance: 80, price: 75000 },
+  { distance: 90, price: 80000 },
+  { distance: 100, price: 85000 },
+  { distance: 150, price: 100000 },
+  { distance: 200, price: 140000 },
+  { distance: 250, price: 170000 },
+  { distance: 300, price: 200000 },
+  { distance: 350, price: 230000 },
+];
