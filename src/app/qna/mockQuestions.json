@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "title": "기계 대여 문의",
+    "content": "기계 대여 가능한 날짜가 어떻게 되나요?",
+    "authorName": "김민수",
+    "authorEmail": "kim@example.com",
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "isAnswered": true,
+    "answer": {
+      "id": 1,
+      "questionId": 1,
+      "content": "안녕하세요. 현재 2월 중순까지 예약이 가능합니다.",
+      "createdAt": "2024-01-16T00:00:00.000Z"
+    }
+  },
+  {
+    "id": 2,
+    "title": "배송 관련 문의",
+    "content": "배송비는 별도인가요?",
+    "authorName": "이지은",
+    "authorEmail": "lee@example.com",
+    "createdAt": "2024-01-20T00:00:00.000Z",
+    "isAnswered": false
+  },
+  {
+    "id": 3,
+    "title": "기계 사용 문의",
+    "content": "기계 사용 설명서가 제공되나요?",
+    "authorName": "박준호",
+    "authorEmail": "park@example.com",
+    "createdAt": "2024-01-22T00:00:00.000Z",
+    "isAnswered": true,
+    "answer": {
+      "id": 2,
+      "questionId": 3,
+      "content": "네, 대여 시 상세한 사용 설명서를 제공해 드립니다.",
+      "createdAt": "2024-01-23T00:00:00.000Z"
+    }
+  },
+  {
+    "id": 4,
+    "title": "결제 방법 문의",
+    "content": "카드 결제만 가능한가요?",
+    "authorName": "최영희",
+    "authorEmail": "choi@example.com",
+    "createdAt": "2024-01-25T00:00:00.000Z",
+    "isAnswered": false
+  },
+  {
+    "id": 5,
+    "title": "대여 기간 연장",
+    "content": "대여 기간을 연장할 수 있나요?",
+    "authorName": "정태원",
+    "authorEmail": "jung@example.com",
+    "createdAt": "2024-01-27T00:00:00.000Z",
+    "isAnswered": true,
+    "answer": {
+      "id": 3,
+      "questionId": 5,
+      "content": "네, 기계가 예약되지 않은 경우 연장 가능합니다. 연장 요청은 3일 전까지 해주셔야 합니다.",
+      "createdAt": "2024-01-28T00:00:00.000Z"
+    }
+  },
+  {
+    "id": 6,
+    "title": "취소 정책",
+    "content": "예약 후 취소할 수 있나요?",
+    "authorName": "한지민",
+    "authorEmail": "han@example.com",
+    "createdAt": "2024-01-30T00:00:00.000Z",
+    "isAnswered": true,
+    "answer": {
+      "id": 4,
+      "questionId": 6,
+      "content": "7일 전까지는 전액 환불 가능하며, 이후에는 수수료가 발생할 수 있습니다.",
+      "createdAt": "2024-01-31T00:00:00.000Z"
+    }
+  },
+  {
+    "id": 7,
+    "title": "기계 청소",
+    "content": "반납 시 기계 청소는 어떻게 해야 하나요?",
+    "authorName": "송민준",
+    "authorEmail": "song@example.com",
+    "createdAt": "2024-02-02T00:00:00.000Z",
+    "isAnswered": false
+  },
+  {
+    "id": 8,
+    "title": "추가 옵션",
+    "content": "팝콘 재료도 같이 구매할 수 있나요?",
+    "authorName": "윤서연",
+    "authorEmail": "yoon@example.com",
+    "createdAt": "2024-02-05T00:00:00.000Z",
+    "isAnswered": true,
+    "answer": {
+      "id": 5,
+      "questionId": 8,
+      "content": "네, 다양한 팝콘 재료 패키지를 선택할 수 있습니다.",
+      "createdAt": "2024-02-06T00:00:00.000Z"
+    }
+  },
+  {
+    "id": 9,
+    "title": "대여 시간",
+    "content": "대여 시간은 어떻게 되나요?",
+    "authorName": "임현우",
+    "authorEmail": "lim@example.com",
+    "createdAt": "2024-02-08T00:00:00.000Z",
+    "isAnswered": false
+  },
+  {
+    "id": 10,
+    "title": "기계 고장 시",
+    "content": "기계가 고장났을 때 어떻게 해야 하나요?",
+    "authorName": "김수진",
+    "authorEmail": "kim2@example.com",
+    "createdAt": "2024-02-10T00:00:00.000Z",
+    "isAnswered": true,
+    "answer": {
+      "id": 6,
+      "questionId": 10,
+      "content": "24시간 고객센터로 연락주시면 즉시 조치해 드립니다.",
+      "createdAt": "2024-02-11T00:00:00.000Z"
+    }
+  }
+]
