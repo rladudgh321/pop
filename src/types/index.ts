@@ -38,7 +38,7 @@ export type Question = {
   authorEmail: string;
   createdAt: Date;
   isAnswered: boolean;
-  answer: Answer | null | undefined;
+  answer: Answer | null;
 };
 
 // QnA 게시판 답변 타입 정의

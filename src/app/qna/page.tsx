@@ -24,8 +24,8 @@ const parsedQuestions: Question[] = mockQuestions.map((q: JsonQuestion) => ({
   createdAt: new Date(q.createdAt),
   answer: q.answer ? {
     ...q.answer,
-    createdAt: q.answer?.createdAt ? new Date(q.answer.createdAt) : new Date()
-  } : undefined
+    createdAt: new Date(q.answer.createdAt)
+  } : null
 }));
 
 export default function QnAPage() {

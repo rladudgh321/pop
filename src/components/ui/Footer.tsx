@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-100 mt-auto">
@@ -23,13 +25,13 @@ export default function Footer() {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">바로가기</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/machines" className="text-gray-600 hover:text-amber-600 transition-colors">기계 소개</a>
+                <Link href="/machines" className="text-gray-600 hover:text-amber-600 transition-colors">기계 소개</Link>
               </li>
               <li>
-                <a href="/reservation" className="text-gray-600 hover:text-amber-600 transition-colors">예약하기</a>
+                <Link href="/reservation" className="text-gray-600 hover:text-amber-600 transition-colors">예약하기</Link>
               </li>
               <li>
-                <a href="/qna" className="text-gray-600 hover:text-amber-600 transition-colors">고객 문의</a>
+                <Link href="/qna" className="text-gray-600 hover:text-amber-600 transition-colors">고객 문의</Link>
               </li>
             </ul>
           </div>

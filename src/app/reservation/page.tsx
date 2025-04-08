@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { MACHINES, RICE_OPTIONS } from '../../constants/data';
 import { calculateTotalPrice } from '../../utils/pricing';
 
-export default function ReservationPage() {
+function ReservationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMachineId = searchParams.get('machine') ? parseInt(searchParams.get('machine') as string) : null;
@@ -272,5 +272,13 @@ export default function ReservationPage() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function ReservationPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReservationContent />
+    </Suspense>
   );
 }
