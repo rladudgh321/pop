@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
-import { calculateTotalPrice } from '../../utils/pricing';
+import { calculateTotalPrice, getRiceOptionPrice } from '../../utils/pricing';
 import type { ReservationFormData } from './context/FormContext';
 import HeroSection from './components/HeroSection';
 import ProgressSteps from './components/ProgressSteps';
@@ -40,19 +40,48 @@ const ReservationClient = () => {
   const selectedMachine = watch('selectedMachine'); // 기계선택
   const startDate = watch('startDate'); // 날짜선택 시작일
   const endDate = watch('endDate'); // 날짜선택 종료일
-  const selectedRiceOption = watch('selectedRiceOption'); // 원재료 옵션 선택
+  const selectedRiceOptions = watch('selectedRiceOptions'); // 원재료 옵션 선택
   const deliveryOption = watch('deliveryOption'); // 용달 옵션 선택
   const customerName = watch('customerName'); // 고객 이름
   const customerPhone = watch('customerPhone'); // 고객 번호
   const customerEmail = watch('customerEmail'); // 고객 이메일
   console.log('기계선택', selectedMachine);
-  console.log('원재료 옵션 선택', selectedRiceOption);
+  console.log('원재료 옵션 선택', selectedRiceOptions);
   console.log('날짜선택 시작일', startDate);
   console.log('날짜선택 종료일', endDate);
   // 가격 계산
   const calculatePrice = useCallback(() => {
+    if (!selectedMachine || !startDate || !endDate) {
+      alert('기계와 날짜를 선택해주세요.');
+      return;
+    }
+
+    if (!selectedRiceOptions || selectedRiceOptions.length === 0) {
+      alert('원재료 옵션을 선택해주세요.');
+      return;
+    }
+
+    if (!deliveryOption?.distance || deliveryOption?.isRoundTrip === undefined) {
+      alert('용달 옵션을 선택해주세요.');
+      return;
+    }
+  
+    const start = new Date(startDate + 'T00:00:00');
+    const end = new Date(endDate + 'T00:00:00');
+  
+    if (start > end) {
+      alert('종료일은 시작일 이후여야 합니다.');
+      return;
+    }
+
     try {
-      const price = calculateTotalPrice(new Date(startDate), new Date(endDate), selectedRiceOption) +
+      const riceOptionPrice = selectedRiceOptions.reduce((prev, cur) => {
+        console.log(prev)
+        console.log(cur)
+        return (prev + cur)
+      })
+      // const riceOptionPrice = getRiceOptionPrice(selectedRiceOptions);
+      const price = calculateTotalPrice(start, end) + riceOptionPrice +
         (deliveryOption ? (deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price) : 0);
     
       setTotalPrice(price);
@@ -61,7 +90,7 @@ const ReservationClient = () => {
       console.error('가격 계산 중 오류 발생:', error);
       alert('가격 계산 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-  }, [deliveryOption, selectedRiceOption, startDate, endDate]);
+  }, [deliveryOption, selectedRiceOptions, selectedMachine, startDate, endDate]);
 
   // 결제 처리
   const onSubmit: SubmitHandler<ReservationFormData> = (data) => {
@@ -117,13 +146,13 @@ const ReservationClient = () => {
       selectedMachine !== methods.getValues('selectedMachine') ||
       startDate !== methods.getValues('startDate') ||
       endDate !== methods.getValues('endDate') ||
-      selectedRiceOption !== methods.getValues('selectedRiceOption') ||
+      selectedRiceOptions !== methods.getValues('selectedRiceOptions') ||
       JSON.stringify(deliveryOption) !== JSON.stringify(methods.getValues('deliveryOption'));
 
     if (hasChanges && isCalculated) {
       setIsCalculated(false);
     }
-  }, [selectedMachine, startDate, endDate, selectedRiceOption, deliveryOption, methods, isCalculated]);
+  }, [selectedMachine, startDate, endDate, selectedRiceOptions, deliveryOption, methods, isCalculated]);
 
   return (
     <FormProvider {...methods}>
@@ -134,7 +163,7 @@ const ReservationClient = () => {
         <ProgressSteps 
           selectedMachine={selectedMachine} 
           hasDateSelected={!!(startDate && endDate)}
-          hasRiceOptionSelected={!!selectedRiceOption}
+          hasRiceOptionSelected={!!selectedRiceOptions && selectedRiceOptions.length > 0}
           hasDeliveryOptionSelected={!!(deliveryOption?.distance && deliveryOption?.isRoundTrip !== undefined)}
           isCalculated={isCalculated} 
         />

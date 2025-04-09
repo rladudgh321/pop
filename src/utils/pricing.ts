@@ -75,11 +75,13 @@ export const getWeekdaysAndWeekends = (startDate: Date, endDate: Date): { weekda
 /**
  * 원재료 옵션에 따른 추가 가격을 계산하는 함수
  */
-export const getRiceOptionPrice = (riceOptionId: number | null): number => {
-  if (!riceOptionId) return 0;
+export const getRiceOptionPrice = (selectedRiceOptions: { id: number; quantity: number }[]): number => {
+  if (!selectedRiceOptions || selectedRiceOptions.length === 0) return 0;
   
-  const option = RICE_OPTIONS.find(opt => opt.id === riceOptionId);
-  return option ? option.price : 0;
+  return selectedRiceOptions.reduce((total, option) => {
+    const riceOption = RICE_OPTIONS.find(o => o.id === option.id);
+    return total + (riceOption ? riceOption.price * option.quantity : 0);
+  }, 0);
 };
 
 /**
@@ -112,6 +114,7 @@ export const calculateTotalPrice = (
   
   // 원재료 옵션 추가 가격
   const optionPrice = getRiceOptionPrice(riceOptionId);
+  console.log('riceOptionId', riceOptionId);
   console.log(`원재료 옵션 추가 가격: ${optionPrice.toLocaleString()}원`);
   
   // 총 가격
