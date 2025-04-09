@@ -5,6 +5,7 @@ export type Machine = {
   description: string;
   image: string;
   available: boolean;
+  pricePerDay: number;
 };
 
 // 원재료 옵션 타입 정의

@@ -8,6 +8,7 @@ export const MACHINES: Machine[] = [
     description: '소형 뻥튀기 기계, 시간당 최대 50개 생산 가능',
     image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=1470&auto=format&fit=crop',
     available: true,
+    pricePerDay: 50000,
   },
   {
     id: 2,
@@ -15,6 +16,7 @@ export const MACHINES: Machine[] = [
     description: '중형 뻥튀기 기계, 시간당 최대 100개 생산 가능',
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1472&auto=format&fit=crop',
     available: true,
+    pricePerDay: 80000,
   },
   {
     id: 3,
@@ -22,6 +24,7 @@ export const MACHINES: Machine[] = [
     description: '대형 뻥튀기 기계, 시간당 최대 200개 생산 가능',
     image: 'https://images.unsplash.com/photo-1612200385488-e3e8ec94d42a?q=80&w=1470&auto=format&fit=crop',
     available: true,
+    pricePerDay: 120000,
   },
 ];
 
