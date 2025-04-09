@@ -3,11 +3,23 @@
 import Image from 'next/image';
 import { useFormContext } from 'react-hook-form';
 import { MACHINES } from '../../../constants/data';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
 
 
 const MachineSelection = () => {
+  const router = useRouter();
   const { register, setValue, formState: { errors }, watch } = useFormContext();
   const selectedMachine = watch('selectedMachine');
+  // console.log('selectedMachine',  selectedMachine);
+
+  const onClickRadio = useCallback(() => {
+    router.push(`/reservation?machine=${selectedMachine}`, { scroll: false})
+  },[router, selectedMachine])
+
+  useEffect(() => {
+    onClickRadio();
+  },[onClickRadio])
 
   return (
     <section id="machine-selection" className="mb-12 relative bg-gradient-to-br from-amber-50 to-white rounded-2xl p-8 shadow-lg border border-amber-100">
@@ -47,6 +59,7 @@ const MachineSelection = () => {
               type="radio"
               id={`machine-${machine.id}`}
               value={machine.id}
+              onClick={onClickRadio}
               className="hidden"
               {...register('selectedMachine', { required: '기계를 선택해주세요.' })}
             />

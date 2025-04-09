@@ -19,16 +19,16 @@ const ReservationClient = () => {
   const initialMachineId = searchParams.get('machine') ? parseInt(searchParams.get('machine') as string) : null;
 
   const methods = useForm<ReservationFormData>({
-    mode: 'onChange',
+    // mode: 'onChange',
     defaultValues: {
       selectedMachine: initialMachineId,
-      startDate: '',
-      endDate: '',
-      selectedRiceOption: null,
-      deliveryOption: null,
-      customerName: '',
-      customerPhone: '',
-      customerEmail: ''
+      // startDate: '',
+      // endDate: '',
+      // selectedRiceOption: null,
+      // deliveryOption: null,
+      // customerName: '',
+      // customerPhone: '',
+      // customerEmail: ''
     }
   });
 
@@ -37,39 +37,22 @@ const ReservationClient = () => {
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   
-  const selectedMachine = watch('selectedMachine');
-  const startDate = watch('startDate');
-  const endDate = watch('endDate');
-  const selectedRiceOption = watch('selectedRiceOption');
-  const deliveryOption = watch('deliveryOption');
-
+  const selectedMachine = watch('selectedMachine'); // 기계선택
+  const startDate = watch('startDate'); // 날짜선택 시작일
+  const endDate = watch('endDate'); // 날짜선택 종료일
+  const selectedRiceOption = watch('selectedRiceOption'); // 원재료 옵션 선택
+  const deliveryOption = watch('deliveryOption'); // 용달 옵션 선택
+  const customerName = watch('customerName'); // 고객 이름
+  const customerPhone = watch('customerPhone'); // 고객 번호
+  const customerEmail = watch('customerEmail'); // 고객 이메일
+  console.log('기계선택', selectedMachine);
+  console.log('원재료 옵션 선택', selectedRiceOption);
+  console.log('날짜선택 시작일', startDate);
+  console.log('날짜선택 종료일', endDate);
   // 가격 계산
   const calculatePrice = useCallback(() => {
-    if (!selectedMachine || !startDate || !endDate) {
-      alert('기계와 날짜를 선택해주세요.');
-      return;
-    }
-
-    if (!selectedRiceOption) {
-      alert('원재료 옵션을 선택해주세요.');
-      return;
-    }
-
-    if (!deliveryOption?.distance || deliveryOption?.isRoundTrip === undefined) {
-      alert('용달 옵션을 선택해주세요.');
-      return;
-    }
-  
-    const start = new Date(startDate + 'T00:00:00');
-    const end = new Date(endDate + 'T00:00:00');
-  
-    if (start > end) {
-      alert('종료일은 시작일 이후여야 합니다.');
-      return;
-    }
-
     try {
-      const price = calculateTotalPrice(start, end, selectedRiceOption) +
+      const price = calculateTotalPrice(new Date(startDate), new Date(endDate), selectedRiceOption) +
         (deliveryOption ? (deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price) : 0);
     
       setTotalPrice(price);
@@ -78,7 +61,7 @@ const ReservationClient = () => {
       console.error('가격 계산 중 오류 발생:', error);
       alert('가격 계산 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-  }, [deliveryOption, selectedRiceOption, selectedMachine, startDate, endDate]);
+  }, [deliveryOption, selectedRiceOption, startDate, endDate]);
 
   // 결제 처리
   const onSubmit: SubmitHandler<ReservationFormData> = (data) => {
@@ -125,7 +108,8 @@ const ReservationClient = () => {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [initialMachineId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 가격이 계산되면 isCalculated를 false로 리셋
   useEffect(() => {
