@@ -13,7 +13,10 @@ export interface ReservationFormData {
   selectedMachine: number | null;
   startDate: string;
   endDate: string;
-  selectedRiceOption: number | null;
+  selectedRiceOptions: {
+    id: number;
+    quantity: number;
+  }[];
   deliveryOption: DeliveryOption | null;
   customerName: string;
   customerPhone: string;
@@ -35,7 +38,7 @@ export const ReservationFormProvider = ({
       selectedMachine: initialMachineId,
       startDate: '',
       endDate: '',
-      selectedRiceOption: null,
+      selectedRiceOptions: [],
       deliveryOption: null,
       customerName: '',
       customerPhone: '',

@@ -59,6 +59,15 @@ const CustomerInformation = () => {
           )}
         </div>
       </div>
+      {/* 결제하기 버튼 */}
+      <div className='w-full flex justify-center items-center mt-10'>
+        <button
+          type="submit"
+          className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg text-xl"
+        >
+          결제하기
+        </button>
+      </div>
     </div>
   );
 };

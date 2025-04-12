@@ -1,28 +1,35 @@
 import { useFormContext } from 'react-hook-form';
 import { RICE_OPTIONS } from '../../../constants/data';
 import { useState } from 'react';
+import { ReservationFormData } from '../context/FormContext';
+
+type RiceOption = {
+  id: number;
+  quantity: number;
+};
 
 const RiceOptionSelection = () => {
-  const { setValue, watch } = useFormContext();
+  const { setValue, watch } = useFormContext<ReservationFormData>();
   const selectedRiceOptions = watch('selectedRiceOptions') || [];
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
+  console.log('selectedRiceOptionㅡㅡㅡㅡ', selectedRiceOptions);
 
   const handleQuantityChange = (optionId: number, value: number) => {
     if (value < 1) return;
     setQuantities(prev => ({ ...prev, [optionId]: value }));
     
-    const updatedOptions = selectedRiceOptions.map(option => 
+    const updatedOptions = selectedRiceOptions.map((option: RiceOption) => 
       option.id === optionId ? { ...option, quantity: value } : option
     );
     setValue('selectedRiceOptions', updatedOptions);
   };
 
   const handleOptionClick = (optionId: number) => {
-    const isSelected = selectedRiceOptions.some(option => option.id === optionId);
+    const isSelected = selectedRiceOptions.some((option: RiceOption) => option.id === optionId);
     let updatedOptions;
     
     if (isSelected) {
-      updatedOptions = selectedRiceOptions.filter(option => option.id !== optionId);
+      updatedOptions = selectedRiceOptions.filter((option: RiceOption) => option.id !== optionId);
       setQuantities(prev => {
         const newQuantities = { ...prev };
         delete newQuantities[optionId];
@@ -44,7 +51,7 @@ const RiceOptionSelection = () => {
           <div 
             key={option.id} 
             className={`border rounded-lg p-6 transition-all transform hover:scale-105 ${
-              selectedRiceOptions.some(o => o.id === option.id)
+              selectedRiceOptions.some((o: RiceOption) => o.id === option.id)
                 ? 'border-amber-600 ring-2 ring-amber-600 shadow-lg bg-amber-50' 
                 : 'border-gray-200 hover:border-amber-300 hover:shadow-md bg-white'
             }`}
@@ -60,7 +67,7 @@ const RiceOptionSelection = () => {
               </p>
             </div>
 
-            {selectedRiceOptions.some(o => o.id === option.id) && (
+            {selectedRiceOptions.some((o: RiceOption) => o.id === option.id) && (
               <div className="mt-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <button

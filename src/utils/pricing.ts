@@ -85,6 +85,11 @@ export const getRiceOptionPrice = (selectedRiceOptions: { id: number; quantity: 
 };
 
 /**
+ * 원재료 옵션에 따른 계산
+ */
+
+
+/**
  * 총 대여 가격을 계산하는 함수
  */
 export const calculateTotalPrice = (

@@ -62,7 +62,7 @@ const DeliveryOptionSelection = () => {
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="radio"
-                  value="false"
+                  value="onewayprice"
                   className="form-radio text-amber-600"
                   disabled={!selectedDistance}
                   {...register('deliveryOption.isRoundTrip', { required: '배송 방식을 선택해주세요.' })}
@@ -76,7 +76,7 @@ const DeliveryOptionSelection = () => {
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="radio"
-                  value="true"
+                  value="twowayprice"
                   className="form-radio text-amber-600"
                   disabled={!selectedDistance}
                   {...register('deliveryOption.isRoundTrip', { required: '배송 방식을 선택해주세요.' })}

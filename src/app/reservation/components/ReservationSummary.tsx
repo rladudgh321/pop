@@ -1,48 +1,63 @@
 import { useFormContext } from 'react-hook-form';
-import { MACHINES, RICE_OPTIONS, DELIVERY_PRICES } from '../../../constants/data';
+import { MACHINES, RICE_OPTIONS, DELIVERY_PRICES, PRICING } from '../../../constants/data';
 import CustomerInformation from './CustomerInformation';
 import { useEffect, useState } from 'react';
+import { getDaysBetween, getWeekdaysAndWeekends, getWeekendPriceByDuration } from '@/utils/pricing';
 
 const ReservationSummary = ({ totalPrice }: { totalPrice: number }) => {
   const { watch } = useFormContext();
   const selectedMachine = watch('selectedMachine');
   const startDate = watch('startDate');
   const endDate = watch('endDate');
-  const selectedRiceOption = watch('selectedRiceOption');
+  interface SelectedRiceOptionProps {
+    id: number;
+    quantity: number;
+  }
+  const selectedRiceOption: SelectedRiceOptionProps[] = watch('selectedRiceOptions');
   const deliveryOption = watch('deliveryOption');
   console.log('deliveryOption', deliveryOption);
-
+  console.log('selectedRiceOptionㅡㅡㅡㅡ', selectedRiceOption);
+  console.log('RICE_OPTIONSㅡㅡㅡㅡ', RICE_OPTIONS);
+  const price = selectedRiceOption.map((v) => {
+    const riceName = RICE_OPTIONS.find(o => o.id === v.id)?.name || '';
+    const ricePrice = RICE_OPTIONS.find(o => o.id === v.id)?.price || 0;
+    const riceQuantity = v.quantity || 0;
+    return { riceName, ricePrice: Number(ricePrice), riceQuantity: Number(riceQuantity) };
+  });
+  console.log('price', price);
 
   const [calculatedPrice, setCalculatedPrice] = useState(totalPrice);
 
   const selectedMachineData = MACHINES.find(m => m.id === selectedMachine);
-  const selectedRiceOptionData = selectedRiceOption ? RICE_OPTIONS.find(o => o.id === selectedRiceOption) : null;
+  const selectedRiceOptionData = selectedRiceOption ? RICE_OPTIONS.find(o => 
+    selectedRiceOption.map((v) => (
+      o.id === v.id
+  ))) : null;
+  
   const deliveryPrice = deliveryOption?.distance ? 
     (DELIVERY_PRICES.find(p => p.distance === Number(deliveryOption.distance))?.price || 0) : 0;
-
+    console.log('selectedMachineData', selectedMachineData)
+  console.log('selectedRiceOptionData', selectedRiceOptionData);
   console.log('deliveryPrice', deliveryPrice);
 
-  // 날짜 차이 계산 함수
-  const calculateDaysDifference = (start: string, end: string) => {
-    if (!start || !end) return 0;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1을 해서 당일도 포함
-  };
+    const totalDays = getDaysBetween(startDate, endDate);
+    const weekendPrice = getWeekendPriceByDuration(totalDays);
+    
+    const { weekdays, weekends } = getWeekdaysAndWeekends(startDate, endDate);
+    const basePrice = (weekdays * PRICING.WEEKDAY) + (weekends * weekendPrice);
+    console.log('!!@@basePrice', basePrice);
 
   // 실시간 가격 계산
   useEffect(() => {
     if (selectedMachineData && startDate && endDate) {
-      const days = calculateDaysDifference(startDate, endDate);
-      const machinePrice = selectedMachineData.pricePerDay * days;
-      const riceOptionPrice = selectedRiceOptionData?.price || 0;
+      const machinePrice = weekdays * 50000 + weekends * weekendPrice;
+      const riceOptionPrice = price.map((v) => v.ricePrice * v.riceQuantity).reduce((acc, curr) => acc + curr, 0)
       const deliveryOption = watch('deliveryOption');
-      const deliveryTotalPrice = deliveryOption?.isRoundTrip ? deliveryPrice * 2 : deliveryPrice;
+      const deliveryTotalPrice = (deliveryOption.isRoundTrip === 'twowayprice' ? Number(deliveryPrice) * 2 : deliveryPrice);
       const total = machinePrice + riceOptionPrice + deliveryTotalPrice;
       setCalculatedPrice(total);
     }
-  }, [selectedMachineData, startDate, endDate, selectedRiceOptionData, deliveryOption, deliveryPrice, watch]);
+  }, [deliveryPrice, endDate, price, selectedMachineData, startDate, watch, weekdays, weekendPrice, weekends]);
 
   return (
     <section className="mb-12 bg-gradient-to-br from-amber-50 to-white rounded-2xl p-8 shadow-lg border border-amber-100 transform transition-all hover:shadow-xl">
@@ -56,16 +71,21 @@ const ReservationSummary = ({ totalPrice }: { totalPrice: number }) => {
             <p className="text-lg font-semibold">{selectedMachineData?.name || '-'}</p>
             {selectedMachineData && startDate && endDate && (
               <p className="text-sm text-amber-600 mt-2">
-                {calculateDaysDifference(startDate, endDate)}일 × {selectedMachineData.pricePerDay.toLocaleString()}원 = {(calculateDaysDifference(startDate, endDate) * selectedMachineData.pricePerDay).toLocaleString()}원
+                {weekdays}일 × 50,000원 + {weekends}일 × {(weekendPrice).toLocaleString()}원 = {(basePrice).toLocaleString()}원
               </p>
             )}
           </div>
           <div className="border rounded-lg p-6 bg-gray-50 hover:shadow-md transition-shadow">
             <p className="text-gray-600 mb-1">선택한 원재료</p>
-            <p className="text-lg font-semibold">{selectedRiceOptionData?.name || '일반 쌀'}</p>
+            <div>
+              <p className='text-lg font-semibold'>{price.map((v) => v.riceName).join(', ')}</p>
+            </div>
             {selectedRiceOptionData && selectedRiceOptionData.price > 0 && (
               <p className="text-sm text-amber-600 mt-2">
-                추가 비용: {selectedRiceOptionData.price.toLocaleString()}원
+                {price[0]?.riceQuantity && price[0]?.riceName} {price[0]?.riceQuantity && 'X'} {price[0]?.riceQuantity} {price[1]?.riceQuantity && ' + '}
+                {price[1]?.riceQuantity && price[1]?.riceName} {price[1]?.riceQuantity && 'X'} {price[1]?.riceQuantity} {price[2]?.riceQuantity && ' + '}
+                {price[2]?.riceQuantity && price[2]?.riceName} {price[2]?.riceQuantity && 'X'} {price[2]?.riceQuantity} &nbsp;=&nbsp;&nbsp;
+                {price.map((v) => v.ricePrice * v.riceQuantity).reduce((acc, curr) => acc + curr, 0).toLocaleString()}원
               </p>
             )}
           </div>
@@ -82,8 +102,8 @@ const ReservationSummary = ({ totalPrice }: { totalPrice: number }) => {
               <p className="text-gray-600 mb-1">배송 옵션</p>
               <p className="text-lg font-semibold">
                 { console.log('deliveryOption!!!!!!!!! 배송옵션', deliveryOption.isRoundTrip) }
-                {deliveryOption.distance}km {deliveryOption.isRoundTrip === true ? '왕복' : '편도'} - 
-                {((deliveryOption.isRoundTrip ? Number(deliveryPrice) * 2 : deliveryPrice) || 0).toLocaleString()}원
+                {deliveryOption.distance}km {deliveryOption.isRoundTrip === 'twowayprice' ? '왕복' : '편도'} - 
+                {((deliveryOption.isRoundTrip === 'twowayprice' ? Number(deliveryPrice) * 2 : deliveryPrice) || 0).toLocaleString()}원
               </p>
             </div>
           )}

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
-import { calculateTotalPrice, getRiceOptionPrice } from '../../utils/pricing';
+import { calculateTotalPrice } from '../../utils/pricing';
+import { RICE_OPTIONS } from '../../constants/data';
 import type { ReservationFormData } from './context/FormContext';
 import HeroSection from './components/HeroSection';
 import ProgressSteps from './components/ProgressSteps';
@@ -12,6 +13,7 @@ import DateSelection from './components/DateSelection';
 import RiceOptionSelection from './components/RiceOptionSelection';
 import DeliveryOptionSelection from './components/DeliveryOptionSelection';
 import ReservationSummary from './components/ReservationSummary';
+import CustomerInformation from './components/CustomerInformation';
 
 const ReservationClient = () => {
   const router = useRouter();
@@ -37,14 +39,12 @@ const ReservationClient = () => {
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   
-  const selectedMachine = watch('selectedMachine'); // 기계선택
-  const startDate = watch('startDate'); // 날짜선택 시작일
-  const endDate = watch('endDate'); // 날짜선택 종료일
-  const selectedRiceOptions = watch('selectedRiceOptions'); // 원재료 옵션 선택
-  const deliveryOption = watch('deliveryOption'); // 용달 옵션 선택
-  const customerName = watch('customerName'); // 고객 이름
-  const customerPhone = watch('customerPhone'); // 고객 번호
-  const customerEmail = watch('customerEmail'); // 고객 이메일
+  const selectedMachine = watch('selectedMachine');
+  const startDate = watch('startDate');
+  const endDate = watch('endDate');
+  const selectedRiceOptions = watch('selectedRiceOptions');
+  const deliveryOption = watch('deliveryOption');
+  
   console.log('기계선택', selectedMachine);
   console.log('원재료 옵션 선택', selectedRiceOptions);
   console.log('날짜선택 시작일', startDate);
@@ -75,13 +75,13 @@ const ReservationClient = () => {
     }
 
     try {
-      const riceOptionPrice = selectedRiceOptions.reduce((prev, cur) => {
-        console.log(prev)
-        console.log(cur)
-        return (prev + cur)
-      })
-      // const riceOptionPrice = getRiceOptionPrice(selectedRiceOptions);
-      const price = calculateTotalPrice(start, end) + riceOptionPrice +
+      const riceOptionPrice = selectedRiceOptions.reduce((total, option) => {
+        if (!option || !option.id || !option.quantity) return total;
+        const riceOption = RICE_OPTIONS.find(o => o.id === option.id);
+        return total + (riceOption ? riceOption.price * option.quantity : 0);
+      }, 0);
+      
+      const price = calculateTotalPrice(start, end, null) + riceOptionPrice +
         (deliveryOption ? (deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price) : 0);
     
       setTotalPrice(price);
@@ -167,39 +167,31 @@ const ReservationClient = () => {
           hasDeliveryOptionSelected={!!(deliveryOption?.distance && deliveryOption?.isRoundTrip !== undefined)}
           isCalculated={isCalculated} 
         />
-        <MachineSelection />
-        <DateSelection />
-        <RiceOptionSelection />
-        <DeliveryOptionSelection />
-
-        <form onSubmit={methods.handleSubmit(onSubmit)} className="text-center">
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <MachineSelection />
+          <DateSelection />
+          <RiceOptionSelection />
+          <DeliveryOptionSelection />
+          
           {/* 가격 계산 버튼 */}
-          <div className="mb-12">
-            <button 
-              type="button"
-              onClick={calculatePrice}
-              className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              disabled={!selectedMachine || !startDate || !endDate}
-            >
-              가격 계산하기
-            </button>
-          </div>
+          <div className="my-10 flex justify-center items-center w-full">
+              <button 
+                type="button"
+                onClick={calculatePrice}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                disabled={!selectedMachine || !startDate || !endDate}
+              >
+                가격 계산하기
+              </button>
+            </div>
 
-          {/* 가격 정보 및 결제 */}
-          {isCalculated && (
-            <ReservationSummary 
-              totalPrice={totalPrice}
-            />
-          )} 
-
-          <button
-            type="submit"
-            className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg text-xl"
-          >
-            결제하기
-          </button>
+            {/* 가격 정보 및 결제 */}
+            {isCalculated && (
+                <ReservationSummary 
+                  totalPrice={totalPrice}
+                />
+            )} 
         </form>
-        
       </div>
     </FormProvider>
   );

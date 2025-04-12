@@ -5,7 +5,7 @@ export const MACHINES: Machine[] = [
   {
     id: 1,
     name: '뻥튀기 기계 A',
-    description: '소형 뻥튀기 기계, 시간당 최대 50개 생산 가능',
+    description: '뻥튀기 기계',
     image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=1470&auto=format&fit=crop',
     available: true,
     pricePerDay: 50000,
@@ -13,18 +13,18 @@ export const MACHINES: Machine[] = [
   {
     id: 2,
     name: '뻥튀기 기계 B',
-    description: '중형 뻥튀기 기계, 시간당 최대 100개 생산 가능',
+    description: '뻥튀기 기계',
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1472&auto=format&fit=crop',
     available: true,
-    pricePerDay: 80000,
+    pricePerDay: 50000,
   },
   {
     id: 3,
     name: '뻥튀기 기계 C',
-    description: '대형 뻥튀기 기계, 시간당 최대 200개 생산 가능',
+    description: '뻥튀기 기계',
     image: 'https://images.unsplash.com/photo-1612200385488-e3e8ec94d42a?q=80&w=1470&auto=format&fit=crop',
     available: true,
-    pricePerDay: 120000,
+    pricePerDay: 50000,
   },
 ];
 
@@ -32,21 +32,21 @@ export const MACHINES: Machine[] = [
 export const RICE_OPTIONS: RiceOption[] = [
   {
     id: 1,
-    name: '일반 쌀',
-    price: 0, // 기본 옵션이므로 추가 비용 없음
-    description: '기본 제공되는 일반 쌀',
+    name: '단호박 쌀',
+    price: 20000,
+    description: '단호박의 은은하고 단맛과 구수한 향이 특징인 단호박 쌀',
   },
   {
     id: 2,
-    name: '단호박 쌀',
-    price: 70000, // 7만원
-    description: '달콤한 맛이 특징인 단호박 쌀',
+    name: '자색고구마 쌀',
+    price: 50000,
+    description: '영양가가 높고 색이 고운 자색고구마 쌀',
   },
   {
     id: 3,
-    name: '자색고구마 쌀',
-    price: 93000, // 9만 3천원
-    description: '영양가가 높고 색이 고운 자색고구마 쌀',
+    name: '양파 쌀',
+    price: 50000,
+    description: '양파의 특유 감칠맛과 건강한 양파 쌀',
   },
 ];
 
