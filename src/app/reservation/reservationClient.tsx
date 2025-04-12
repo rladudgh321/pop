@@ -13,7 +13,6 @@ import DateSelection from './components/DateSelection';
 import RiceOptionSelection from './components/RiceOptionSelection';
 import DeliveryOptionSelection from './components/DeliveryOptionSelection';
 import ReservationSummary from './components/ReservationSummary';
-import CustomerInformation from './components/CustomerInformation';
 
 const ReservationClient = () => {
   const router = useRouter();
