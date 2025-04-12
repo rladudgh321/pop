@@ -80,7 +80,7 @@ const ReservationClient = () => {
         return total + (riceOption ? riceOption.price * option.quantity : 0);
       }, 0);
       
-      const price = calculateTotalPrice(start, end, null) + riceOptionPrice +
+      const price = calculateTotalPrice(start, end) + riceOptionPrice +
         (deliveryOption ? (deliveryOption.isRoundTrip ? deliveryOption.price * 2 : deliveryOption.price) : 0);
     
       setTotalPrice(price);

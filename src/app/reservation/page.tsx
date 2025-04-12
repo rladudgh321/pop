@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ReservationClient from './reservationClient';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: '뻥튀기 기계 예약',
@@ -8,6 +9,8 @@ export const metadata: Metadata = {
 
 export default function ReservationPage() {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
       <ReservationClient />
+    </Suspense>
   );
 }

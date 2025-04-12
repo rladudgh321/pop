@@ -1,4 +1,4 @@
-import { PRICING, RICE_OPTIONS } from '../constants/data';
+import { PRICING } from '../constants/data';
 
 /**
  * 주말인지 확인하는 함수 (토요일 또는 일요일)
@@ -72,22 +72,6 @@ export const getWeekdaysAndWeekends = (startDate: Date, endDate: Date): { weekda
   return { weekdays, weekends };
 };
 
-/**
- * 원재료 옵션에 따른 추가 가격을 계산하는 함수
- */
-export const getRiceOptionPrice = (selectedRiceOptions: { id: number; quantity: number }[]): number => {
-  if (!selectedRiceOptions || selectedRiceOptions.length === 0) return 0;
-  
-  return selectedRiceOptions.reduce((total, option) => {
-    const riceOption = RICE_OPTIONS.find(o => o.id === option.id);
-    return total + (riceOption ? riceOption.price * option.quantity : 0);
-  }, 0);
-};
-
-/**
- * 원재료 옵션에 따른 계산
- */
-
 
 /**
  * 총 대여 가격을 계산하는 함수
@@ -95,7 +79,6 @@ export const getRiceOptionPrice = (selectedRiceOptions: { id: number; quantity: 
 export const calculateTotalPrice = (
   startDate: Date,
   endDate: Date,
-  riceOptionId: number | null
 ): number => {
   // 콘솔에 계산 과정 출력 (백엔드 구현 전 임시)
   console.log(`대여 시작일: ${startDate.toLocaleDateString()}`);
@@ -114,16 +97,7 @@ export const calculateTotalPrice = (
   console.log(`적용된 주말 가격: ${weekendPrice.toLocaleString()}원`);
   
   // 기본 대여 가격 계산
-  const basePrice = (weekdays * PRICING.WEEKDAY) + (weekends * weekendPrice);
-  console.log(`기본 대여 가격: ${basePrice.toLocaleString()}원`);
-  
-  // 원재료 옵션 추가 가격
-  const optionPrice = getRiceOptionPrice(riceOptionId);
-  console.log('riceOptionId', riceOptionId);
-  console.log(`원재료 옵션 추가 가격: ${optionPrice.toLocaleString()}원`);
-  
-  // 총 가격
-  const totalPrice = basePrice + optionPrice;
+  const totalPrice = (weekdays * PRICING.WEEKDAY) + (weekends * weekendPrice);
   console.log(`최종 가격: ${totalPrice.toLocaleString()}원`);
   
   return totalPrice;
